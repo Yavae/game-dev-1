@@ -1,0 +1,38 @@
+# Archivos de compilación
+/build/
+*.o
+*.obj
+*.exe
+*.dll
+*.lib
+*.pdb
+
+# Archivos de CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Archivos de VS/VS Code
+.vscode/
+*.sln
+*.vcxproj*
+*.user
+*.ipch
+*.opensdf
+*.sdf
+*.suo
+
+# Archivos de vcpkg
+vcpkg_installed/
+vcpkg/downloads/
+vcpkg/buildtrees/
+vcpkg/packages/
+
+# Archivos temporales
+*.log
+*.tmp
+*.bak
+
+# Otros
+*.bat

@@ -1,0 +1,23 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "clang-mingw64",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "C:/msys64/mingw64/bin/clang.exe",
+        "CMAKE_CXX_COMPILER": "C:/msys64/mingw64/bin/clang++.exe",
+        "CMAKE_TOOLCHAIN_FILE": "C:/devtools/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-mingw-dynamic",
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "clang-mingw64",
+      "configurePreset": "clang-mingw64"
+    }
+  ]
+}
