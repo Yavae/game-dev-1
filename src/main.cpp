@@ -1,19 +1,43 @@
 #include <glad/glad.h>
-#include "core/window.h"
-#include <iostream>
+#include "core/window/window.h"
+#include "core/menu/menu.h"
 #include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+#include <iostream>
 
 int main()
 {
-    Window window(800, 600, "JuegoTest");
+    Window window(1280, 720, "JuegoTest");
 
-    int lastWidth = 0, lastHeight = 0;
-    WindowMode lastMode = WindowMode::Windowed;
-    WindowMode lastPrevMode = WindowMode::Windowed;
+    // Menú centrado y proporcional, no se puede mover ni redimensionar
+    Menu mainMenu("Menu Principal", 0.5f, 0.5f,
+                  MenuBehavior::Centered | MenuBehavior::Proportional | MenuBehavior::NoMove | MenuBehavior::NoResize,
+                  GLFW_KEY_M);
 
-    std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
-    std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-    std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
+    // Menú centrado y proporcional, se puede mover
+    Menu settingsMenu("Ajustes", 0.4f, 0.6f,
+                      MenuBehavior::Centered | MenuBehavior::Proportional,
+                      GLFW_KEY_N);
+
+    // Menú libre: se puede mover, redimensionar, sin centrado ni proporcional
+    Menu freeMenu("Menu Libre", 0.3f, 0.3f,
+                  MenuBehavior::Default,
+                  GLFW_KEY_B);
+
+    // Menú libre: se puede mover, no se peude redimensionar, sin centrado ni proporcional
+    Menu freeMenuNoResize("Menu Libre 2", 0.3f, 0.3f,
+                          MenuBehavior::Default | MenuBehavior::NoResize,
+                          GLFW_KEY_V);
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplGlfw_InitForOpenGL(window.getHandle(), true);
+    ImGui_ImplOpenGL3_Init("#version 330");
 
     while (!window.shouldClose())
     {
@@ -22,36 +46,26 @@ int main()
         if (glfwGetKey(window.getHandle(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window.getHandle(), true);
 
-        if (glfwGetKey(window.getHandle(), GLFW_KEY_1) == GLFW_PRESS)
-            window.setResolution(800, 600);
-        if (glfwGetKey(window.getHandle(), GLFW_KEY_2) == GLFW_PRESS)
-            window.setResolution(1280, 720);
-        if (glfwGetKey(window.getHandle(), GLFW_KEY_3) == GLFW_PRESS)
-            window.setResolution(1920, 1080);
-
-        if (glfwGetKey(window.getHandle(), GLFW_KEY_F) == GLFW_PRESS)
-            window.setWindowMode(WindowMode::Fullscreen);
-        if (glfwGetKey(window.getHandle(), GLFW_KEY_W) == GLFW_PRESS)
-            window.setWindowMode(WindowMode::Windowed);
-        if (glfwGetKey(window.getHandle(), GLFW_KEY_B) == GLFW_PRESS)
-            window.setWindowMode(WindowMode::Borderless);
-
-        if (window.getWidth() != lastWidth || window.getHeight() != lastHeight || window.getMode() != lastMode || window.getPrevMode() != lastPrevMode)
-        {
-            lastWidth = window.getWidth();
-            lastHeight = window.getHeight();
-            lastMode = window.getMode();
-            lastPrevMode = window.getPrevMode();
-            std::cout << "Window size: " << lastWidth << "x" << lastHeight
-                      << " | Mode: " << static_cast<int>(lastMode)
-                      << " | PrevMode: " << static_cast<int>(lastPrevMode) << "\n";
-        }
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
 
         glClearColor(0.1f, 0.12f, 0.15f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // Renderizar menús
+        mainMenu.render(window);
+        settingsMenu.render(window);
+        freeMenu.render(window);
+        freeMenuNoResize.render(window);
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
         window.swapBuffers();
     }
 
-    return 0;
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 }

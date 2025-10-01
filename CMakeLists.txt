@@ -5,7 +5,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(JuegoTest 
     src/main.cpp 
-    src/Core/window.cpp
+    src/core/window/window.cpp
+    src/core/menu/menu.cpp
 )
 
 # Buscar librerías
@@ -20,4 +21,4 @@ target_link_libraries(JuegoTest PRIVATE glfw glad::glad glm::glm imgui::imgui)
 target_include_directories(JuegoTest PRIVATE 
     ${imgui_INCLUDE_DIRS} 
     ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/installed/x64-mingw-dynamic/include/imgui/backends
-)
+)   

@@ -46,8 +46,12 @@ GLFWwindow *Window::getHandle() const { return handle; }
 
 void Window::setResolution(int w, int h)
 {
+    if (mode != WindowMode::Windowed)
+        return;
+
     if (width == w && height == h)
         return;
+
     prevHeight = height;
     prevWidth = width;
     width = w;
@@ -81,6 +85,9 @@ void Window::applyMode()
             ypos = 30;
         }
 
+        glfwSetWindowAttrib(handle, GLFW_DECORATED, GLFW_TRUE);
+        glfwSetWindowAttrib(handle, GLFW_RESIZABLE, GLFW_TRUE);
+
         glfwSetWindowMonitor(handle, nullptr, xpos, ypos, width, height, GLFW_DONT_CARE);
     }
     else if (mode == WindowMode::Fullscreen)
@@ -89,14 +96,22 @@ void Window::applyMode()
         const GLFWvidmode *vm = glfwGetVideoMode(monitor);
         width = vm->width;
         height = vm->height;
+
+        glfwSetWindowAttrib(handle, GLFW_DECORATED, GLFW_FALSE);
+        glfwSetWindowAttrib(handle, GLFW_RESIZABLE, GLFW_FALSE);
+
         glfwSetWindowMonitor(handle, monitor, xpos, ypos, width, height, vm->refreshRate);
     }
     else if (mode == WindowMode::Borderless)
     {
-        monitor = glfwGetWindowMonitor(handle);
+        GLFWmonitor *monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode *vm = glfwGetVideoMode(monitor);
         width = vm->width;
         height = vm->height;
-        glfwSetWindowMonitor(handle, monitor, xpos, ypos, width, height, GLFW_DONT_CARE);
+
+        glfwSetWindowAttrib(handle, GLFW_DECORATED, GLFW_FALSE);
+        glfwSetWindowAttrib(handle, GLFW_RESIZABLE, GLFW_FALSE);
+
+        glfwSetWindowMonitor(handle, nullptr, 0, 0, width, (height + 30), GLFW_DONT_CARE);
     }
 }
